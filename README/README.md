@@ -22,7 +22,9 @@ This document contains the following details:
 The main purpose of this network is to expose a load-balanced and monitored instance of DVWA, the D*mn Vulnerable Web Application.
 
 Load balancing ensures that the application will be high performing, in addition to restricting traffic to the network.
-- _TODO: What aspect of security do load balancers protect? What is the advantage of a jump box?_Load Balancers protect the network by distributing traffic evenly to prevent single server overload and failure when demand spikes.  This in turn enhances a user's experience by reducing their request response time.  Redundancy is also added to the network so should a portion of the network fail there is support elsewhere to pickup the added work.  The advantage of a jump box is that it acts as a single access point to a secure zone, forcing the user to authenticate there before accessing the resources it is protecting from unauthorized access.
+- _TODO: What aspect of security do load balancers protect? What is the advantage of a jump box?_
+
+  Load Balancers protect the network by distributing traffic evenly to prevent single server overload and failure when demand spikes.  This in turn enhances a user's experience by reducing their request response time.  Redundancy is also added to the network so should a portion of the network fail there is support elsewhere to pickup the added work.  The advantage of a jump box is that it acts as a single access point to a secure zone, forcing the user to authenticate there before accessing the resources it is protecting from unauthorized access.
 
 Integrating an ELK server allows users to easily monitor the vulnerable VMs for changes to the traffic and system metrics.
 - _TODO: What does Filebeat watch for?_ Filebeats monitors the logfiles of locations you specify.  It collects these logs and then forwards them to Elasticsearch or Logstash to be indexed.
@@ -34,42 +36,47 @@ _Note: Use the [Markdown Table Generator](http://www.tablesgenerator.com/markdow
 | Name     | Function | IP Address | Operating System |
 | -------- | -------- | ---------- | ---------------- |
 | Jump Box | Gateway  | 10.0.0.1   | Linux            |
-| Web1     |          |            |                  |
-| Web2     |          |            |                  |
-| Web3     |          |            |                  |
+| Web1     | Server   | 10.0.07    | Linux            |
+| Web2     | Server   | 10.0.0.5   | Linux            |
+| Web3     | Server   | 10.0.0.6   | Linux            |
 
 ### Access Policies
 
 The machines on the internal network are not exposed to the public Internet. 
 
 Only the jump box machine can accept connections from the Internet. Access to this machine is only allowed from the following IP addresses:
-- _TODO: Add whitelisted IP addresses_
+- 10.0.0.1
+- 10.0.0.2 
+- Home IP Address (dynamic)
 
-Machines within the network can only be accessed by _____.
-- _TODO: Which machine did you allow to access your ELK VM? What was its IP address?_
+Machines within the network can only be accessed by other machines within the Virtual Network and the load balancer.
+- _TODO: Which machine did you allow to access your ELK VM? What was its IP address?_The only machine with access to the ELK VM is the Jump Box VM (10.0.1.4)
 
 A summary of the access policies in place can be found in the table below.
 
-| Name     | Publicly Accessible | Allowed IP Addresses |
-|----------|---------------------|----------------------|
-| Jump Box | Yes/No              | 10.0.0.1 10.0.0.2    |
-|          |                     |                      |
-|          |                     |                      |
+| Name                 | Publicly Accessible | Allowed IP Addresses      |
+| -------------------- | ------------------- | ------------------------- |
+| Jump Box             | Yes/No              | 10.0.0.1 10.0.0.2         |
+| AllowSSH             | Yes/No              | Home IP Address (dynamic) |
+| AllowHTTP            | Yes/No              | Home IP Address (dynamic) |
+| AllowJumpBoxSSHtoWeb | No                  | 10.0.1.0/24               |
+| AllowICMP            | Yes/No              | Home IP Address (dynamic) |
+| AllowRDP             | Yes/No              | Home IP Address (dynamic) |
 
 ### Elk Configuration
 
 Ansible was used to automate configuration of the ELK machine. No configuration was performed manually, which is advantageous because...
-- _TODO: What is the main advantage of automating configuration with Ansible?_
+- The benefits of automating configurations with Ansible is you can then quickly make updates to your machine by rerunning your playbook, as well as configure many machines quickly and accurately.
 
 The playbook implements the following tasks:
-- _TODO: In 3-5 bullets, explain the steps of the ELK installation play. E.g., install Docker; download image; etc._
+
 - First we access the Elk server by referring to the host file, where we have configured access to the ELK server
 - Virtual Memory Size is increased to allow the ELK server to function.
 - Next docker.io (docker) is downloaded
 - Next pip3 is installed to help with the downloading and configuring of python modules
 - Install Python Docker module
 - Manage ELK container ports
-- Enabale the Docker Service
+- Enable the Docker Service
 
 The following screenshot displays the result of running `docker ps` after successfully configuring the ELK instance.
 
@@ -77,21 +84,26 @@ The following screenshot displays the result of running `docker ps` after succes
 
 ### Target Machines & Beats
 This ELK server is configured to monitor the following machines:
-- _TODO: List the IP addresses of the machines you are monitoring_
+- 10.0.0.7
+- 10.0.0.5
+- 10.0.0.6
 
 We have installed the following Beats on these machines:
-- _TODO: Specify which Beats you successfully installed_Filebeats and Metricbeats were successfully installed on the server.
+- Filebeats
+- Metricbeats
 
 These Beats allow us to collect the following information from each machine:
 - _TODO: In 1-2 sentences, explain what kind of data each beat collects, and provide 1 example of what you expect to see. E.g., `Winlogbeat` collects Windows logs, which we use to track user logon events, etc._
+- Filebeats helps to collect....
+- Metricbeats helps to collect....
 
 ### Using the Playbook
 In order to use the playbook, you will need to have an Ansible control node already configured. Assuming you have such a control node provisioned: 
 
 SSH into the control node and follow the steps below:
 - Copy the _____ file to _____.
-- Update the _____ file to include...
-- Run the playbook, and navigate to ____ to check that the installation worked as expected.
+- Update the (ansible) hosts file to include the IP addresses of the machines you would like the playbook to apply too.
+- Run the playbook, and navigate to the machines IP address in your home browser to check that the installation worked as expected.
 
 _TODO: Answer the following questions to fill in the blanks:_
 - _Which file is the playbook? Where do you copy it?_
