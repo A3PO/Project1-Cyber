@@ -6,10 +6,12 @@ The files in this repository were used to configure the network depicted below.
 
 These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the _____ file may be used to install only certain pieces of it, such as Filebeat.
 
-  - _TODO: ELK-playbook.yml
+  - [ELK-playbook.yml](https://github.com/A3PO/Project1-Cyber/blob/main/Ansible/ansible/elk-playbook.yml)
+
+    
 
 This document contains the following details:
-- Description of the Topologu
+- Description of the Topology
 - Access Policies
 - ELK Configuration
   - Beats in Use
@@ -22,46 +24,45 @@ This document contains the following details:
 The main purpose of this network is to expose a load-balanced and monitored instance of DVWA, the D*mn Vulnerable Web Application.
 
 Load balancing ensures that the application will be high performing, in addition to restricting traffic to the network.
-- _TODO: What aspect of security do load balancers protect? What is the advantage of a jump box?_
-
-  Load Balancers protect the network by distributing traffic evenly to prevent single server overload and failure when demand spikes.  This in turn enhances a user's experience by reducing their request response time.  Redundancy is also added to the network so should a portion of the network fail there is support elsewhere to pickup the added work.  The advantage of a jump box is that it acts as a single access point to a secure zone, forcing the user to authenticate there before accessing the resources it is protecting from unauthorized access.
+- Load Balancers protect the network by distributing traffic evenly to prevent single server overload and failure when demand spikes.  This in turn enhances a user's experience by reducing their request response time.  Redundancy is also added to the network so should a portion of the network fail there is support elsewhere to pickup the added work.  The advantage of a jump box is that it acts as a single access point to a secure zone, forcing the user to authenticate there before accessing the resources it is protecting from unauthorized access.
 
 Integrating an ELK server allows users to easily monitor the vulnerable VMs for changes to the traffic and system metrics.
-- _TODO: What does Filebeat watch for?_ Filebeats monitors the logfiles of locations you specify.  It collects these logs and then forwards them to Elasticsearch or Logstash to be indexed.
-- _TODO: What does Metricbeat record?_ Metricbeat records metrics and statistics that it collects and then forwards them to the output you specify, whether it is Elasticsearch or Logstash.
+- Filebeats monitors the logfiles of locations you specify.  It collects these logs and then forwards them to Elasticsearch or Logstash to be indexed.
+- Metricbeat records metrics and statistics that it collects and then forwards them to the output you specify, whether it is Elasticsearch or Logstash.
 
 The configuration details of each machine may be found below.
-_Note: Use the [Markdown Table Generator](http://www.tablesgenerator.com/markdown_tables) to add/remove values from the table_.
 
 | Name     | Function | IP Address | Operating System |
 | -------- | -------- | ---------- | ---------------- |
-| Jump Box | Gateway  | 10.0.0.1   | Linux            |
+| Jump Box | Gateway  | 10.0.1.4   | Linux            |
 | Web1     | Server   | 10.0.07    | Linux            |
 | Web2     | Server   | 10.0.0.5   | Linux            |
 | Web3     | Server   | 10.0.0.6   | Linux            |
+| ELK      | server   | 10.1.0.4   | Linux            |
 
 ### Access Policies
 
 The machines on the internal network are not exposed to the public Internet. 
 
-Only the jump box machine can accept connections from the Internet. Access to this machine is only allowed from the following IP addresses:
-- 10.0.0.1
-- 10.0.0.2 
+Only the jump box machine and ELK machine can accept connections from the Internet. Access to these machines is only allowed from the following IP addresses:
+
 - Home IP Address (dynamic)
 
 Machines within the network can only be accessed by other machines within the Virtual Network and the load balancer.
-- _TODO: Which machine did you allow to access your ELK VM? What was its IP address?_The only machine with access to the ELK VM is the Jump Box VM (10.0.1.4)
+- The only machine with access to the ELK VM is the Jump Box VM (10.0.1.4) as well as the only public access is from the home IP address.
 
 A summary of the access policies in place can be found in the table below.
 
-| Name                 | Publicly Accessible | Allowed IP Addresses      |
-| -------------------- | ------------------- | ------------------------- |
-| Jump Box             | Yes/No              | 10.0.0.1 10.0.0.2         |
-| AllowSSH             | Yes/No              | Home IP Address (dynamic) |
-| AllowHTTP            | Yes/No              | Home IP Address (dynamic) |
-| AllowJumpBoxSSHtoWeb | No                  | 10.0.1.0/24               |
-| AllowICMP            | Yes/No              | Home IP Address (dynamic) |
-| AllowRDP             | Yes/No              | Home IP Address (dynamic) |
+| Name                               | Publicly Accessible | Allowed IP Addresses       |
+| :--------------------------------- | ------------------- | -------------------------- |
+| Jump Box                           | Yes                 | Home IP Address (diynamic) |
+| AllowSSH (JB- inbound)             | Yes                 | Home IP Address (dynamic)  |
+| AllowHTTP (JB- inbound)            | Yes                 | Home IP Address (dynamic)  |
+| AllowJumpBoxSSHtoWeb (JB- inbound) | No                  | 10.0.1.0/24                |
+| AllowICMP (JB- inbound)            | Yes                 | Home IP Address (dynamic)  |
+| AllowRDP (JB- inbound)             | Yes                 | Home IP Address (dynam     |
+| SSH (ELK-inbound)                  | Yes                 | Home IP Address (dynamic)  |
+| Port_5601 (ELK - inbound)          | Yes                 | Home IP Address (dynamic)  |
 
 ### Elk Configuration
 
@@ -78,7 +79,7 @@ The playbook implements the following tasks:
 - Manage ELK container ports
 - Enable the Docker Service
 
-The following screenshot displays the result of running `docker ps` after successfully configuring the ELK instance.
+The following screenshot displays the result of running `sudo docker ps -a` after successfully configuring the ELK instance.
 
 ![TODO: Update the path with the name of your screenshot of docker ps output](Images/docker_ps_output.png)
 
@@ -92,22 +93,19 @@ We have installed the following Beats on these machines:
 - Filebeats
 - Metricbeats
 
-These Beats allow us to collect the following information from each machine:
-- _TODO: In 1-2 sentences, explain what kind of data each beat collects, and provide 1 example of what you expect to see. E.g., `Winlogbeat` collects Windows logs, which we use to track user logon events, etc._
-- Filebeats helps to collect....
-- Metricbeats helps to collect....
+These Beats allow us to collect the following information from each machine: (beats are a group of tools that collect different types of data and passes them on to be further analyzed through Elasticsearch or Kibana. 
+- Filebeats is one of the beat tools to that collects log files and has the capability to 'ingest' them allowing for quicker analysis on the output side.
+- Metricbeats helps to collect what it's name implies the metrics from your system.  These can be memory statistics to per process CPU.
 
 ### Using the Playbook
 In order to use the playbook, you will need to have an Ansible control node already configured. Assuming you have such a control node provisioned: 
 
 SSH into the control node and follow the steps below:
-- Copy the _____ file to _____.
-- Update the (ansible) hosts file to include the IP addresses of the machines you would like the playbook to apply too.
-- Run the playbook, and navigate to the machines IP address in your home browser to check that the installation worked as expected.
+- Copy the [ELK-Playbook.yml](https://github.com/A3PO/Project1-Cyber/blob/main/Ansible/ansible/elk-playbook.yml) file to your  /etc/ansible directory. (Our containers were hardmounted so the ansible directory was placed in the /etc/ directory in the container and allowed you to access the jumpbox from the container.  This was accomplished by using `sudo docker exec -i -t ansible /bin/bash`) 
+- Update the [(ansible) hosts file](https://github.com/A3PO/Project1-Cyber/blob/main/Ansible/ansible/hosts)  to include the IP addresses of the machines you would like the playbook to apply too, the locations for the IP addresses can be seen in the bracketed headers i.e. [ELK].  The Playbook will look at the hosts line to find which machines to apply the configurations to from the bracketed headers. (See the above hyperlink for an example from this exercise)
+- SSH into your container and run the playbook using the command below in the jumpbox container (prompt: root@ansible:~#).  Also make sure you are in the directory containing the playbook.  
+  - `sudo docker exec -i -t ansible /bin/bash`
+  - `ansible-playbook elk-playbook.yml`
 
-_TODO: Answer the following questions to fill in the blanks:_
-- _Which file is the playbook? Where do you copy it?_
-- _Which file do you update to make Ansible run the playbook on a specific machine? How do I specify which machine to install the ELK server on versus which to install Filebeat on?_
-- _Which URL do you navigate to in order to check that the ELK server is running?
+- Next navigate to the ELK-server's public IP address in your home browser to check that the installation worked as expected.
 
-_As a **Bonus**, provide the specific commands the user will need to run to download the playbook, update the files, etc._
